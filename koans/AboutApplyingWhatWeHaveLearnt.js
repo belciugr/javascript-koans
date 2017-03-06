@@ -32,16 +32,34 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(productsICanEat.length).toBe(FILL_ME_IN);
+    expect(productsICanEat.length).toBe(1);
   });
 
   it("given I'm allergic to nuts and hate mushrooms, it should find a pizza I can eat (functional)", function () {
 
       var productsICanEat = [];
 
+      function isNotMushrooms(singleIngredient)
+      {
+        //ingredient must not be mushrooms
+        return singleIngredient !== "mushrooms";
+      }
+
+      function checkProduct(product)
+      {
+        //check product for nuts
+        if(product.containsNuts == true)
+          return false;
+        
+        //check ingredients list for mushrooms
+        return _(product.ingredients).all(isNotMushrooms);
+      }
       /* solve using filter() & all() / any() */
 
-      expect(productsICanEat.length).toBe(FILL_ME_IN);
+      //filter products so that they don't have any nuts and ingredients doesn't have mushrooms
+      productsICanEat = products.filter(checkProduct);
+
+      expect(productsICanEat.length).toBe(1);
   });
 
   /*********************************************************************************/
@@ -55,14 +73,25 @@ describe("About Applying What We Have Learnt", function() {
       }
     }
 
-    expect(sum).toBe(FILL_ME_IN);
+    expect(sum).toBe(233168);
   });
 
   it("should add all the natural numbers below 1000 that are multiples of 3 or 5 (functional)", function () {
 
-    var sum = FILL_ME_IN;    /* try chaining range() and reduce() */
+    /* try chaining range() and reduce() */
 
-    expect(233168).toBe(FILL_ME_IN);
+    function checkNumber(memo, num){
+      if (num % 3 === 0 || num % 5 === 0)
+        return memo + num;
+      return memo; //in this case do not add 'num'
+    }
+
+    //use 'range' to obtain array from 0...999 then 'reduce' to add numbers which are multiples of 3 and 5
+    var sum = _.range(1000).reduce(checkNumber);
+
+
+
+    expect(233168).toBe(sum);
   });
 
   /*********************************************************************************/
@@ -75,28 +104,72 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   it("should count the ingredient occurrence (functional)", function () {
     var ingredientCount = { "{ingredient name}": 0 };
+    
+
+    function countIngredients(memo, currValue, num)
+    {
+      //count ingredients
+      ingredientCount[currValue] = (ingredientCount[currValue] || 0) + 1;
+    }
 
     /* chain() together map(), flatten() and reduce() */
+    var ingr = _(products).chain()
+               .map(function(x) {return x.ingredients }) //map to array of arrays with ingredients
+               .flatten() //map to single array with ingresients
+               .reduce(countIngredients, 0); //count ingredients starting from 0
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   /*********************************************************************************/
   /* UNCOMMENT FOR EXTRA CREDIT */
-  /*
+
   it("should find the largest prime factor of a composite number", function () {
 
+    var number = 234658;
+    
+    var d = 2;
+    while(number > 1)
+    {
+      while((number % d) === 0){
+        number = number / d;
+      }
+
+      if(number > 1)
+        d = d + 1;
+    }
+
+    expect(d).toBe(117329);
   });
+
 
   it("should find the largest palindrome made from the product of two 3 digit numbers", function () {
 
+    function isPalindrome(x){
+      return x.toString() === x.toString().split("").reverse().join("");
+    }
+    
+    var arr = [];
+    for(var i = 999; i >= 100; i--)
+    {
+      for(var j = 999; j >= 100; j--)
+      {
+        var n = i*j;
+        if(isPalindrome(n))
+          arr.push(n);
+      }
+    }
+
+    var max = Math.max.apply(Math, arr);
+    expect(max).toBe(906609);
   });
 
+/*
   it("should find the smallest number divisible by each of the numbers 1 to 20", function () {
 
 
